@@ -1,0 +1,55 @@
+package servlet;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class servletFilter extends HttpServlet {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        this.log("进到了doGet方法");
+        String name = req.getParameter("name");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        res.getWriter().print(" come From hello world! " + name);
+        //this.execute(req, res);
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        this.log("进到了doPost方法");
+        this.execute(req, res);
+    }
+
+    private void execute(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        req.setCharacterEncoding("UTF-8");
+        res.setCharacterEncoding("UTF-8");
+
+        String method = req.getMethod();
+        String name = req.getParameter("name");
+
+        String useragent = req.getHeader("user-agent" + "////");
+        this.log(useragent);
+
+        PrintWriter out = res.getWriter();
+        out.print("<html>");
+        out.print("<body>");
+        out.print(" come From " + method + " hello world! " + name);
+        out.print("</body>");
+        out.print("</html>");
+        out.flush();
+        out.close();
+    }
+}
