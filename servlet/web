@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"  
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee   
+    http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+    
+    <!-- 全局参数 -->
+    <context-param>
+    <param-name>name</param-name>
+    <param-value>value</param-value>
+    </context-param>
+    <!-- 全局参数 -->
+    
+    <servlet>
+    <servlet-name>servletFilter</servlet-name>
+    <servlet-class>servlet.servletFilter</servlet-class>
+    </servlet>
+    
+    <servlet-mapping>
+    <servlet-name>servletFilter</servlet-name>
+    <url-pattern>/servlet/servletFilter.jsp</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+    <servlet-name>imageCodeFilter</servlet-name>
+    <servlet-class>servlet.imageCodeFilter</servlet-class>
+    <init-param>
+    
+    <param-name>contentType</param-name>
+    <param-value>image/jpeg</param-value>
+    
+    
+    </init-param>
+    </servlet>
+    
+    <servlet-mapping>
+    <servlet-name>imageCodeFilter</servlet-name>
+    <url-pattern>/servlet/imageCodeFilter.jsp</url-pattern>
+    </servlet-mapping>
+</web-app>
