@@ -1,0 +1,51 @@
+一、servlet配置流程
+创建CALSS继承自HTTPSERVLET：
+servletFilter extends HttpServlet
+
+定义对应的doGet和doPost方法。
+protected void doPost(HttpServletRequest req, HttpServletResponse res)
+protected void doGet(HttpServletRequest req, HttpServletResponse res)
+HttpServletRequest：包括所有的请求信息
+HttpServletResponse：包括所有的响应信息
+
+在web.xml中配置servlet
+<servlet>
+<servlet-name>servletFilter</servlet-name><!-- servlet调用名称 -->
+<servlet-class>servlet.servletFilter</servlet-class><!-- servlet类的文件地址 -->
+<init-param>
+    
+<param-name>contentType</param-name><!-- 参数定义 -->
+<param-value>image/jpeg</param-value><!-- 参数值定义 -->
+    
+</init-param>
+</servlet>
+    
+<servlet-mapping>
+<servlet-name>servletFilter</servlet-name><!-- servlet调用名称 -->
+<url-pattern>/servlet/servletFilter.jsp</url-pattern><!-- servlet url调用方式,注：调用方式后缀可以随意修改，这样可以防止别人知道你的开发环境 -->
+</servlet-mapping>
+
+二、servlet生命周期
+servlet的生命周期是从服务器启动或者第一次调用该servlet时就实例化的，直到服务器关闭才会销毁该实例化的servlet。
+所以多并发请求使用的是同一个servlet，通过多线程的方式调用servlet的service（）方法。
+
+三、servlet的线程安全问题
+servlet的线程是不安全的，以下面为例：
+private String name;
+name = req.getParameter("name");
+try {
+     Thread.sleep(10000);
+} catch (InterruptedException e) {
+     e.printStackTrace();
+}
+res.getWriter().print(" come From hello world! " + name);
+通过两个不同浏览器同时访问这个地址，两个浏览器输入的参数不同，但最后结果发现现实的参数时相同的，这个就是线程不安全。
+线程不安全的原因是全局变量name，第一个浏览器设置name的参数，然后停止了10秒，这时被第二个浏览器修改了name的参数，所以导致两个浏览器现实的是同一个数据。这个就是线程的不安全。
+
+解决办法：
+1，少用全局变量，参数尽量在对应的方法中进行获取。
+
+2，可以采用synchronized线程同步（一次只跑一个线程）的方式。
+但这样会造成线程的等待，不是特别推荐。
+
+
