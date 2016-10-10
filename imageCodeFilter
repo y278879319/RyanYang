@@ -1,0 +1,96 @@
+package servlet;
+
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.Random;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import sun.awt.image.codec.JPEGImageEncoderImpl;
+
+public class imageCodeFilter extends HttpServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 定义验证码的数字
+     */
+    protected static final char[] charNum = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'A', 'a', 'o', 'O', 'b', 'B',
+        '爱', '你', '妈' };
+
+    /**
+     * 获取6位数的验证码随机数
+     */
+    protected static String getRandomNum() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 6; i++) {
+            sb.append(charNum[new Random().nextInt(charNum.length)]);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 获取随机颜色
+     */
+    protected static Color getRandomColor() {
+        return new Color(new Random().nextInt(255), new Random().nextInt(255), new Random().nextInt(255));
+    }
+
+    /**
+     * 获取颜色的反色
+     */
+    protected static Color getResverColor(Color c) {
+        return new Color(255 - c.getRed(), 255 - c.getGreen(), 255 - c.getBlue());
+    }
+
+    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
+        // 设置输出类型
+        String name = getServletContext().getInitParameter("name");
+        this.log(" name: " + name);
+        String contentType = req.getParameter("contentType");
+        res.setContentType(contentType);
+        // 获取随机字符串
+        String randomNum = getRandomNum();
+        // 将字符串放入SESSION中
+        req.getSession(true).setAttribute("randomNum", randomNum);
+        // 定义验证码的长度和高度
+        int height = 50;
+        int width = 100;
+        // 获取随机背景色
+        Color randomColor = getRandomColor();
+        // 获取反色,用于前景色
+        Color resverColor = getResverColor(randomColor);
+        // 根据长高创建一个彩色图像BufferdImage
+        BufferedImage bImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        // 获取彩色图像的对应画笔Graphics2D
+        Graphics2D graphi = bImage.createGraphics();
+        // 设置字体
+        graphi.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
+        // 设置颜色
+        graphi.setColor(randomColor);
+        // 绘制背景
+        graphi.fillRect(0, 0, width, height);
+        // 在设置反色
+        graphi.setColor(resverColor);
+        // 将随机数写入
+        graphi.drawString(randomNum, 20, 25);
+        // 画出100个噪音点
+        for (int i = 1; i < 100; i++) {
+            graphi.drawRect(new Random().nextInt(width), new Random().nextInt(height), 1, 1);
+        }
+        // 获取servlet的输出流
+        ServletOutputStream out = res.getOutputStream();
+        // 创建JPEG的编码器JPEGIMAGEECCODE,将输出流写入
+        JPEGImageEncoder jpegEncoder = new JPEGImageEncoderImpl(out);
+        // 对图片进行编码
+        jpegEncoder.encode(bImage);
+        // 输出到客户端
+        out.flush();
+    }
+
+}
